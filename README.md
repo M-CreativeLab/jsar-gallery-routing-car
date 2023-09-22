@@ -1,18 +1,18 @@
-# template-for-jsar-widget
+# jsar-gallery-routing-car
 
-The template repository for creating the JSAR Widget.
+See https://playground.babylonjs.com/#1YD970#582.
 
-## How to use
-
-Create your GitHub repository via [this link](https://github.com/new?template_name=template-for-jsar-widget&template_owner=M-CreativeLab), this uses the template repository to create your repository.
+The Routing Car JSAR Widget to demostrate the path following.
 
 ## Open
 
 Type the following URL in JSAR runtime:
 
 ```sh
-https://cdn.jsdelivr.net/gh/M-CreativeLab/template-for-jsar-widget@main/main.xsml
+https://cdn.jsdelivr.net/gh/M-CreativeLab/jsar-gallery-routing-car@main/main.xsml
 ```
+
+Open this [link](https://jsar.netlify.app/playground?url=https://cdn.jsdelivr.net/gh/M-CreativeLab/jsar-gallery-routing-car@main/main.xsml) to view this widget in your browser.
 
 ## License
 
