@@ -2,7 +2,8 @@ const scene = spaceDocument.scene as BABYLON.Scene;
 
 const bodyMaterial = new BABYLON.StandardMaterial('body_mat', scene);
 bodyMaterial.diffuseColor = new BABYLON.Color3(1.0, 0.25, 0.25);
-bodyMaterial.backFaceCulling = false;
+bodyMaterial.emissiveColor = new BABYLON.Color3(1, 0.2, 0.2);
+// bodyMaterial.backFaceCulling = false;
 
 //Array of points for trapezium side of car.
 const side = [
@@ -18,47 +19,58 @@ side.push(side[0]);	//close trapezium
 const extrudePath = [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 4)];
 
 //Create body and apply material
-const carBody = BABYLON.MeshBuilder.ExtrudeShape('body', { shape: side, path: extrudePath, cap: BABYLON.Mesh.CAP_ALL }, scene);
+const carBody = BABYLON.MeshBuilder.ExtrudeShape('body', {
+  shape: side,
+  path: extrudePath,
+  cap: BABYLON.Mesh.CAP_ALL,
+  sideOrientation: BABYLON.Mesh.DOUBLESIDE,
+}, scene);
 carBody.material = bodyMaterial;
 /*-----------------------End Car Body------------------------------------------*/
 
 /*-----------------------Wheel------------------------------------------*/
 
 //Wheel Material 
-var wheelMaterial = new BABYLON.StandardMaterial('wheel_mat', scene);
-var wheelTexture = new BABYLON.Texture('http://ar.rokidcdn.com/web-assets/pages/jsar/textures/wheel.png', scene);
+const wheelMaterial = new BABYLON.StandardMaterial('wheel_mat', scene);
+const wheelTexture = new BABYLON.Texture('http://ar.rokidcdn.com/web-assets/pages/jsar/textures/wheel.png', scene);
 wheelMaterial.diffuseTexture = wheelTexture;
 
 //Set color for wheel tread as black
-var faceColors = [];
+const faceColors = [];
 faceColors[1] = new BABYLON.Color3(0, 0, 0);
 
 //set texture for flat face of wheel 
-var faceUV = [];
+const faceUV = [];
 faceUV[0] = new BABYLON.Vector4(0, 0, 1, 1);
 faceUV[2] = new BABYLON.Vector4(0, 0, 1, 1);
 
 //create wheel front inside and apply material
-var wheelFI = BABYLON.MeshBuilder.CreateCylinder('wheelFI', { diameter: 3, height: 1, tessellation: 24, faceColors: faceColors, faceUV: faceUV }, scene);
+const wheelFI = BABYLON.MeshBuilder.CreateCylinder('wheelFI', {
+  diameter: 3,
+  height: 1,
+  tessellation: 24,
+  faceColors,
+  faceUV,
+  sideOrientation: BABYLON.Mesh.DOUBLESIDE,
+}, scene);
 wheelFI.material = wheelMaterial;
 
 //rotate wheel so tread in xz plane  
 wheelFI.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
 wheelFI.parent = carBody;
 
-
 /*-----------------------End Wheel------------------------------------------*/
 
 /*------------Create other Wheels as Instances, Parent and Position----------*/
-var wheelFO = wheelFI.clone('FO');
+const wheelFO = wheelFI.clone('FO');
 wheelFO.parent = carBody;
 wheelFO.position = new BABYLON.Vector3(-4.5, -2, 2.8);
 
-var wheelRI = wheelFI.clone('RI');
+const wheelRI = wheelFI.clone('RI');
 wheelRI.parent = carBody;
 wheelRI.position = new BABYLON.Vector3(2.5, -2, -2.8);
 
-var wheelRO = wheelFI.clone('RO');
+const wheelRO = wheelFI.clone('RO');
 wheelRO.parent = carBody;
 wheelRO.position = new BABYLON.Vector3(2.5, -2, 2.8);
 
@@ -85,7 +97,7 @@ track.color = new BABYLON.Color3(0, 0, 0);
 const ground = BABYLON.MeshBuilder.CreateGround('ground', { width: 3 * r, height: 3 * r }, scene);
 {
   const mat = new BABYLON.PBRMaterial('mat', scene);
-  mat.albedoColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+  mat.albedoColor = new BABYLON.Color3(0.3, 0.3, 0.3);
   mat.metallic = 0;
   mat.roughness = 1;
   mat.sideOrientation = BABYLON.Material.ClockWiseSideOrientation;
@@ -97,14 +109,14 @@ const ground = BABYLON.MeshBuilder.CreateGround('ground', { width: 3 * r, height
 carBody.position.y = 4;
 carBody.position.z = r;
 
-var path3d = new BABYLON.Path3D(points);
-var normals = path3d.getNormals();
-var theta = Math.acos(BABYLON.Vector3.Dot(BABYLON.Axis.Z, normals[0]));
+const path3d = new BABYLON.Path3D(points);
+let normals = path3d.getNormals();
+let theta = Math.acos(BABYLON.Vector3.Dot(BABYLON.Axis.Z, normals[0]));
 carBody.rotate(BABYLON.Axis.Y, theta, BABYLON.Space.WORLD);
 /*----------------End Position and Rotate Car at Start---------------------*/
 
 /*----------------Animation Loop---------------------------*/
-var i = 0;
+let i = 0;
 scene.registerAfterRender(function () {
   carBody.position.x = points[i].x;
   carBody.position.z = points[i].z;
@@ -114,8 +126,8 @@ scene.registerAfterRender(function () {
   wheelRO.rotate(normals[i], Math.PI / 32, BABYLON.Space.WORLD);
 
   theta = Math.acos(BABYLON.Vector3.Dot(normals[i], normals[i + 1]));
-  var dir = BABYLON.Vector3.Cross(normals[i], normals[i + 1]).y;
-  var dir = dir / Math.abs(dir);
+  let dir = BABYLON.Vector3.Cross(normals[i], normals[i + 1]).y;
+  dir = dir / Math.abs(dir);
   carBody.rotate(BABYLON.Axis.Y, dir * theta, BABYLON.Space.WORLD);
 
   i = (i + 1) % (n - 1);	//continuous looping  
